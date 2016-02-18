@@ -1,0 +1,138 @@
+<html>
+<head>
+	<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+<title>
+SYnc
+</title>
+</head>
+<body id="body">
+	<h1 id="set">
+		<center>
+			SYNC ANY YOUTUBE VIDEO<br>
+			ID:<input id="url" type="text"></input><br>
+			<button onclick="createlink()">Generate Link</button>
+			<button onclick="join()">Join</button>
+			<h3 id="syncurl"></h3>
+		</center>
+	</h1>
+	<h1>
+		<center>
+			<button id="vidbutton" onclick="startvid()">start videos</button>
+			<span id="ply">Player:</span>
+					<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+				<div id="player"></div>
+		</center>
+	</h1>
+</body>
+<script>
+var snap;
+var vid;
+var start;
+var id = getUrlVars()["id"];
+if(id){
+	var ref = new Firebase('https://fridgelock.firebaseio.com/'+id)
+	$('#set').hide();
+	$('#player').show();
+	//firebase read
+	ref.on("value", function(snapshot) {
+		snap = snapshot.val();
+		console.log(snap)
+		start = snap.start;
+		vid = snap.url;
+		YTReady();
+	}, function (errorObject) {
+		console.log("The read failed: " + errorObject.code);
+	});
+}
+function join() {
+	id = $('#url').val();
+	var ref = new Firebase('https://fridgelock.firebaseio.com/'+id)
+	$('#set').hide();
+	$('#player').show();
+	//firebase read
+	ref.on("value", function(snapshot) {
+		snap = snapshot.val();
+		console.log(snap)
+		start = snap.start;
+		vid = snap.url;
+		YTReady();
+	}, function (errorObject) {
+		console.log("The read failed: " + errorObject.code);
+	});
+}
+function startvid() {
+	var ref = new Firebase('https://fridgelock.firebaseio.com/'+id);
+	ref.update({start: true});
+}
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 3; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+function createlink() {
+	var name = makeid();
+	var ref = new Firebase('https://fridgelock.firebaseio.com/'+name) 
+	console.log(name);
+	var url = $("#url").val();
+	vid = url;
+	ref.set({start: false, url: vid});
+	$("#set").hide();
+	$("#player").show();
+	$('#body').html("Please reload page, your access code is "+name)
+
+}
+
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+  });
+  return vars;
+}
+//YOUTUBE STUFF
+
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+var player;
+function YTReady() {
+$("#ply").html(id);
+player = new YT.Player('player', {
+height: '390',
+width: '640',
+videoId: vid,
+events: {
+'onReady': onPlayerReady
+}
+});
+}
+function onPlayerReady(event) {
+		event.target.playVideo();
+		event.target.pauseVideo();
+			var dte;
+			var chrs;
+			var cmins;
+			var csecs;
+			setInterval(function(){
+			dte = new Date();
+			chrs = dte.getHours();
+			cmins = dte.getMinutes();
+			csecs = dte.getSeconds();
+			if ((start == true)){
+				event.target.playVideo();
+			}
+			},100);
+}
+
+</script>
+</html>
