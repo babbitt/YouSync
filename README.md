@@ -21,3 +21,6 @@ Alright, you really want to know how this works. Fine.
 - Press the start videos button from any of the computers. **NOTE** once you start playback you cannot stop it (not even the built in pause button works)
 
 Enjoy
+
+
+<br><a href="http://joebabbitt.com"><img src="http://joebabbitt.com/img/CodeAvatar.jpg" height="50rem" width="50rem"/></a>
